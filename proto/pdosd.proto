@@ -1,0 +1,51 @@
+syntax = 'proto3';
+
+message Empty {
+}
+
+message Operation {
+  string address = 1;
+
+  uint64 threshold = 2;
+  string target = 3;
+  string service = 4;
+  uint64 epoch_start = 5;
+  uint64 epoch_stop = 6;
+  uint64 staking = 7;
+  string info = 8;
+
+  uint64 users = 9;
+  bool decided = 10;
+
+  bool joined = 11;
+}
+
+message OperationJoinOptions {
+  string address = 1;
+}
+
+message OperationJoinResult {
+  Operation operation = 1;
+  string transaction = 2;
+}
+
+message OperationProposeOptions {
+  uint64 threshold = 1;
+  string target = 2;
+  string service = 3;
+  uint64 epoch_start = 4;
+  uint64 epoch_stop = 5;
+  uint64 staking = 6;
+  string info = 7;
+}
+
+message OperationProposeResult {
+  Operation operation = 1;
+  string transaction = 2;
+}
+
+service PDOSD {
+  rpc OperationList(Empty) returns (stream Operation) {}
+  rpc OperationPropose(OperationProposeOptions) returns (OperationProposeResult) {}
+  rpc OperationJoin(OperationJoinOptions) returns (OperationJoinResult) {}
+}

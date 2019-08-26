@@ -1,0 +1,48 @@
+# docker-compose up
+version: "3.7"
+services:
+    geth:
+        image: ethereum/client-go:latest
+        entrypoint: geth --syncmode "light" --rpc --rpcaddr "0.0.0.0" --rpcvhosts=*
+        expose:
+            - 8545
+        ports:
+            - "8545:8545"
+        volumes:
+            - "~/.config/pdos/geth_datadir:/root/.ethereum"
+        networks:
+            default:
+                aliases:
+                 - geth_host
+
+    pdosd:
+        hostname: pdosd
+        build: .
+        entrypoint: pdosd --eth_rpc http://geth_host:8545
+        depends_on:
+            - geth
+        links:
+            - geth
+        networks:
+            default:
+                aliases:
+                 - pdosd_host
+
+    pdos:
+        hostname: pdos
+        build: .
+        entrypoint: pdos --pdosd_rpc pdosd_host:7331
+        depends_on:
+            - geth
+            - pdosd
+        links:
+            - geth
+            - pdosd
+        networks:
+            default:
+                aliases:
+                 - pdos_host
+
+networks:
+  default:
+    driver: bridge
